@@ -3,14 +3,14 @@ id: 20261121-1211-host-side-clock-command-foundation
 type: task
 title: Host-side clock command foundation
 author: Dust
-status: active
+status: review
 created: "2026-11-21 12:11"
 branch: feature/clock-command-foundation
 inputs: [".dust/artifacts/plans/20261121-1148-alarm-clock-rewrite-architecture.md", ".dust/artifacts/reviews/20261121-1150-alarm-clock-architecture-review.md", ".dust/requirements.md"]
 confidence: medium
-summary: "Approved host-only clock-command foundation: define shared date/time validation and test save/cancel against a fake RTC. No hardware or serial protocol is included."
+summary: "Shared host-testable clock validation/write operation is implemented and target compilation passes. Awaiting independent Tester verification."
 open_questions: []
-next: "Builder implements and tests on feature/clock-command-foundation, then reports evidence for Tester verification."
+next: "Tester verifies the implementation report and acceptance criteria on feature/clock-command-foundation; do not merge without user approval."
 signature:
   agent: user
   role: user
@@ -44,16 +44,16 @@ Standard, difficulty 3/5: a bounded application boundary, validation, fake
 dependency and tests with design judgment but no physical hardware.
 
 ## Acceptance criteria
-- [ ] A single application operation accepts valid calendar date/time values,
+- [x] A single application operation accepts valid calendar date/time values,
       rejects invalid values without changing the fake RTC, and reports success
       or error explicitly.
-- [ ] Tests cover month boundaries, leap-year validity, invalid clock values
+- [x] Tests cover month boundaries, leap-year validity, invalid clock values
       and propagation of a fake RTC write failure without reporting success.
-- [ ] Separate test callers representing local and serial actions invoke the
+- [x] Separate test callers representing local and serial actions invoke the
       same operation and observe identical validation and results.
-- [ ] Editing a candidate value and canceling it leaves the fake RTC unchanged;
+- [x] Editing a candidate value and canceling it leaves the fake RTC unchanged;
       saving a valid candidate updates it exactly once.
-- [ ] Host tests pass and the implementation compiles for the configured
+- [x] Host tests pass and the implementation compiles for the configured
       RP2040 board without flashing the device.
 
 ## Out of scope

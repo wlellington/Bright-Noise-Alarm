@@ -40,4 +40,18 @@ test compiled for the target with the versions above. This does not verify
 operation on the physical hardware.
 
 The project uses `main`, `dev`, and feature branches. Requirements and rewrite
-design are still to be developed; no firmware has been flashed from this setup.
+design are documented in `.dust/`; no firmware has been flashed from this setup.
+
+## Clock command foundation
+
+The first host-side application command is in
+`Firmware/Light_Clock_Firmware/Clock_Command.*`. Its date range matches
+RTClib's supported years (2000–2099); it validates before writing and returns
+an explicit result for invalid input or an RTC write failure. No physical RTC,
+menu, or serial integration is part of this foundation.
+
+Run the host tests from the repository root with:
+
+```sh
+make -C tests test
+```
