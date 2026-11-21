@@ -8,9 +8,9 @@ created: "2026-11-21 12:31"
 branch: feature/peripheral-smoke-tests
 inputs: ["20261121-1227-peripheral-hardware-smoke-test", "20261121-1231-peripheral-bring-up-sketch-build-report", "20261121-1148-alarm-clock-rewrite-architecture"]
 confidence: medium
-summary: "The peripheral diagnostic compiles; physical input/display and opt-in LED/speaker tests await the user entering programming mode."
+summary: "Diagnostic firmware is uploaded and the user confirmed all display segments illuminate; other physical and input checks remain pending."
 open_questions: []
-next: "After the user places the Feather in programming mode, upload the test sketch and record each peripheral's observed result."
+next: "Collect the user's visual/audio observations and control-input results before claiming peripherals work."
 signature:
   agent: user
   role: user
@@ -18,6 +18,16 @@ signature:
   dust: 0.1.0
 ---
 ## Entries
+### 2026-11-21: Display confirmed
+- Decisions: Treat the user's confirmation that all display segments illuminate as evidence for the display hardware check only.
+- Progress vs plan: The display criterion is verified by user observation. Encoder, buttons, potentiometers, RGBW color order, and audible speaker output remain unverified.
+- Surprises / risks: The encoder telemetry session ended without control events; no claim is made that the encoder or buttons work.
+- Standing instructions from the user: Start the next implementation slice with the encoder and main menu system.
+### 2026-11-21: Diagnostic firmware uploaded
+- Decisions: The user confirmed bootloader mode and requested transfer. Uploaded only the standalone peripheral diagnostic; it keeps outputs off at startup and limits test levels.
+- Progress vs plan: UF2 upload completed to `/run/media/contact/RPI-RP2`; the Feather reappeared at `/dev/ttyACM1`. Serial acknowledged display, RGBW and speaker tests, but physical output and control behavior are not independently observed.
+- Surprises / risks: The user was unavailable to report visual/audio results or manipulate controls during telemetry capture. Do not mark requirements satisfied based on command acknowledgements.
+- Standing instructions from the user: Preserve the legacy checkout. Do not begin complex alarm logic until the requested peripheral checks are established.
 ### 2026-11-21: Peripheral diagnostic prepared
 - Decisions: The user requested basic peripheral proof before complex alarm logic. Keep the existing hardware test and legacy checkout untouched; no upload before the user enters programming mode. LED and speaker tests are explicit serial commands at fixed low levels.
 - Progress vs plan: Added and compiled a separate Prop-Maker sketch; see [build report](../reports/20261121-1231-peripheral-bring-up-sketch-build-report.md). The board is detected on `/dev/ttyACM1` in normal serial mode; no physical result is claimed.

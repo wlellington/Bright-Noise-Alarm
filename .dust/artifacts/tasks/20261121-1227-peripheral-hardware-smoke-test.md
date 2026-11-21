@@ -8,9 +8,9 @@ created: "2026-11-21 12:27"
 branch: feature/peripheral-smoke-tests
 inputs: ["20261121-1148-alarm-clock-rewrite-architecture", "20261121-1150-alarm-clock-architecture-review", "20261121-1108-legacy-feature-inventory-and-rewrite-decisions", "REQ-001", "REQ-017", "REQ-020", "REQ-021", "REQ-038", "REQ-039"]
 confidence: medium
-summary: "Standalone peripheral diagnostic sketch compiles for the Prop-Maker; on-device checks await programming mode."
+summary: "Diagnostic firmware is uploaded and the user confirmed all display segments illuminate; encoder/buttons, RGBW color and speaker remain unverified."
 open_questions: []
-next: "Wait for the user to enter programming mode, then upload and record physical observations without claiming full REQ satisfaction."
+next: "Get RGBW/speaker observations and encoder/button/knob results; do not claim peripheral functionality from serial acknowledgements alone."
 signature:
   agent: user
   role: user
@@ -48,7 +48,7 @@ sketch, and physical observations required.
 ## Acceptance criteria
 - [x] The standalone test sketch compiles for the configured RP2040 board and
       does not initialize, block on, or modify RTC, SD or IMU state.
-- [ ] The four-digit display test visibly exercises all digit positions,
+- [x] The four-digit display test visibly exercises all digit positions,
       decimal points and colon at low brightness.
 - [ ] Front (board pin 19) and encoder (seesaw GPIO 24) buttons report
       press/release; encoder address 0x36 reports changing position. Scan

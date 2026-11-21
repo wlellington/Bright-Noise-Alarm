@@ -1,6 +1,6 @@
 ---
 name: Bright-Noise-Alarm
-summary: "Custom RP2040 alarm clock rewrite; peripheral diagnostic sketch is built and awaits programming mode for physical tests."
+summary: "Custom RP2040 alarm clock rewrite; peripheral diagnostic is uploaded, with physical output and control checks pending."
 stack: "Arduino C++ with Earle Philhower RP2040 core and Arduino CLI installed for hardware bring-up; architecture pending."
 created: 2026-11-21
 dust_schema: 1
