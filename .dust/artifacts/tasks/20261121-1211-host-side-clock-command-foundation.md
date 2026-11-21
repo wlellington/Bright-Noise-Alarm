@@ -3,16 +3,14 @@ id: 20261121-1211-host-side-clock-command-foundation
 type: task
 title: Host-side clock command foundation
 author: Dust
-status: blocked
+status: active
 created: "2026-11-21 12:11"
 branch: feature/clock-command-foundation
 inputs: [".dust/artifacts/plans/20261121-1148-alarm-clock-rewrite-architecture.md", ".dust/artifacts/reviews/20261121-1150-alarm-clock-architecture-review.md", ".dust/requirements.md"]
 confidence: medium
-summary: "Proposed host-only clock-command foundation; define shared date/time validation and test save/cancel against a fake RTC. Blocked until the baseline commit and first-slice review are resolved."
-open_questions:
-  - "Has the user approved this bounded scope and its acceptance criteria?"
-  - "Has the baseline been committed and the first slice independently reviewed?"
-next: "Obtain scope approval and review, establish the clean dev baseline, then assign the task to the Builder."
+summary: "Approved host-only clock-command foundation: define shared date/time validation and test save/cancel against a fake RTC. No hardware or serial protocol is included."
+open_questions: []
+next: "Builder implements and tests on feature/clock-command-foundation, then reports evidence for Tester verification."
 signature:
   agent: user
   role: user
@@ -37,6 +35,9 @@ exist. One Builder owns it.
 REQ-002 and REQ-025, partial foundation only. Neither requirement is satisfied
 by fake-RTC host tests; local and serial integration and target verification
 remain future work.
+User approved proceeding with this first implementation scope and criteria on
+2026-11-21: "commit everything and start work" and "I give approval for
+whatever you need to make progress."
 
 ## Recommended tier
 Standard, difficulty 3/5: a bounded application boundary, validation, fake
@@ -60,6 +61,7 @@ Actual menus, USB protocol, RTC hardware integration, persistence, alarms,
 physical outputs, and claiming either requirement satisfied.
 
 ## Dependencies
-The current `dev` baseline must be committed with permission. The first slice
-must pass the applicable independent plan-review gate and the scope and
-acceptance criteria need explicit user approval before staffing.
+Git baseline commit `258e0f3` contains the requirements and plan. Commit this
+task approval and the first-slice review update on `dev` before branching.
+The first-slice review is recorded in review 20261121-1150; unresolved alarm,
+serial and physical-output findings remain gates for later work.

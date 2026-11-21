@@ -8,11 +8,11 @@ created: "2026-11-21 11:50"
 branch: dev
 inputs: [".dust/artifacts/plans/20261121-1148-alarm-clock-rewrite-architecture.md", ".dust/requirements.md"]
 confidence: medium
-summary: "Review findings remain for alarm recovery, requirement-level task criteria and the uncommitted baseline. Hardware verification gates affected output and timing work, not host-only foundation work."
+summary: "The host-only clock-command slice is suitable to start after recording approval and its Git baseline. Alarm recovery, serial policy and physical safety remain open for their respective later slices."
 open_questions:
   - "How should occurrence state survive failed writes, dismissal, and power loss?"
   - "What are the verified safe hardware limits and timing bounds?"
-next: "Resolve findings applicable to the first implementation slice, establish a clean baseline, and independently review that slice before staffing."
+next: "Staff the reviewed clock-command foundation; resolve the remaining findings before their affected implementation slices."
 signature:
   agent: user
   role: user
@@ -47,3 +47,11 @@ check` passes; this checks requirement format, not design completeness.
 2026-11-21 update: finding 2 does not block unrelated host-only work. The plan
 now explicitly gates physical output operation and hardware-safety or timing
 claims on verification. Findings 1, 3 and 4 remain open where applicable.
+
+2026-11-21 first-slice review: task 20261121-1211 supplies a bounded
+host-only clock-command scope, REQ-002 and REQ-025 traceability, testable
+acceptance criteria, target compilation and an explicit hardware exclusion.
+This resolves finding 3 for this slice only. Git baseline commit `258e0f3`
+resolves finding 4 for the recorded baseline; ensure this review update and
+the task's approval are also committed before branching. Finding 1 and the
+serial self-review findings remain open for their later slices.

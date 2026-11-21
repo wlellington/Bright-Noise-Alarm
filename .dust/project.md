@@ -1,6 +1,6 @@
 ---
 name: Bright-Noise-Alarm
-summary: "Custom RP2040 light and audio alarm clock; architecture direction approved, with implementation-slice review and Git baseline pending."
+summary: "Custom RP2040 light and audio alarm clock; first host-only clock-command task is ready for implementation."
 stack: "Arduino C++ with Earle Philhower RP2040 core and Arduino CLI installed for hardware bring-up; architecture pending."
 created: 2026-11-21
 dust_schema: 1
