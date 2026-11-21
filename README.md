@@ -40,4 +40,24 @@ test compiled for the target with the versions above. This does not verify
 operation on the physical hardware.
 
 The project uses `main`, `dev`, and feature branches. Requirements and rewrite
-design are still to be developed; no firmware has been flashed from this setup.
+design are documented in `.dust/`; no firmware has been flashed from this setup.
+
+## Peripheral bring-up
+
+A standalone diagnostic sketch is in `Firmware/Peripheral_Bringup_Test`. It
+does not initialize or change the RTC, SD card, or IMU. The display shows a
+segment/colon pattern at startup; buttons, encoder position, and candidate ADC
+inputs are reported over USB serial.
+
+Outputs are off at startup. Send `l` to scan RGBW channels one pixel at a time
+at brightness 8/255, or `s` for a 100 ms, 440 Hz I2S tone at amplitude
+512/32767. These are conservative functional checks, not verified maximum
+limits or REQ-038 evidence.
+
+Compile without uploading:
+
+```sh
+.arduino/bin/arduino-cli --config-file arduino-cli.yaml compile \
+  --fqbn rp2040:rp2040:adafruit_feather_prop_maker \
+  Firmware/Peripheral_Bringup_Test
+```
