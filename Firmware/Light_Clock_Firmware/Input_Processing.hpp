@@ -5,6 +5,7 @@
 #include <Adafruit_LIS3DH.h>
 
 #include "Defines.hpp"
+#include "Tap_Detection.hpp"
 
 // Encoder State Defines
 #define ENCODER_NONE      0  
@@ -33,12 +34,22 @@ typedef struct {
   // Input hardware
   Adafruit_LIS3DH accel;
   Adafruit_seesaw encoder;
+  bool encoder_available;
+  tap_input::Status tap_status;
+  bool tap_detected;
+  uint32_t tap_poll_ms;
 
   // Input tracking
+  int32_t encoder_position;
+  int32_t encoder_delta;
   bool encoder_up;
   bool encoder_down;
   bool encoder_press;
+  bool encoder_raw_press;
+  bool previous_encoder_press;
   bool front_button_val;
+  bool front_button_raw_val;
+  bool previous_front_button_val;
   bool side_button_1_val;
   bool side_button_2_val;
   uint16_t pot_1_pos;
@@ -52,8 +63,10 @@ typedef struct {
 // ---- Gesture processed input interpretation struct
 typedef struct {
   char encoder_direction;
+  int32_t encoder_delta;
   char encoder_button_press;
   char front_button_press;
+  bool tap_detected;
   char side_button_1_press;
   char side_button_2_press;
   char pot_1_status;

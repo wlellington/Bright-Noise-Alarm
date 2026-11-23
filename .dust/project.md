@@ -1,7 +1,7 @@
 ---
 name: Bright-Noise-Alarm
-summary: "Custom RP2040 light and audio alarm clock; first host-only clock-command task is ready for implementation."
-stack: "Arduino C++ with Earle Philhower RP2040 core and Arduino CLI installed for hardware bring-up; architecture pending."
+summary: "Uploaded automatic menu saving: clock, alarm and sleep adjustments persist immediately, with no Save items or success-screen interruptions. Back/idle keep successful changes; invalid or failed saves show errors. Native encoder alarm/sleep edits survived reboot, clock seconds updated immediately, and original presets/draft/display/dark settings were restored. Seven strict host executables, menu ASan/UBSan and firmware build pass (156,464 program / 23,604 static RAM bytes). Non-stacking temporary tap dimming remains at 120 milli-g, one half-level modifier until interaction-wake expiry. Full-word scrolling menus and inclusive sleep Hold remain intact. Playback stopped. Standalone presets, no-SD startup, pots and front-button wiring remain pending."
+stack: "Arduino C++ with Earle Philhower RP2040 core; approved architecture plan and RP2040 build environment."
 created: 2026-11-21
 dust_schema: 1
 ---
@@ -28,8 +28,17 @@ requirements in the architecture and test plan.
 - Git: git-flow (main / dev / feature/*), conventional commits referencing artifact ids.
 
 ## Workflow
-Full project: fact-finding, living requirements, design/plan, and formal Analyst
-requirements review are enabled.
+Iterative, intent-directed delivery is the project default, approved by the
+user on 2026-11-21. Fact-finding, requirements drafting, formal plans and formal
+Analyst review are optional, used when useful or explicitly requested. Preserve
+existing approved requirements, decisions, plans, reviews and evidence; do not
+silently change binding requirements. Merge, release and host permissions remain
+separate.
 
 ## Key decisions
 <!-- Links to decision artifacts. -->
+- 2026-11-22: Defer REQ-039 until the user solders the two potentiometers and
+  confirms their ADC GPIO mapping. One controls active light brightness and
+  one active audio volume. No takeover until movement catches the current
+  output; thereafter use 0-200% scaling of the ongoing alarm/sleep output,
+  preserving fades and existing safety caps. Keep the menu encoder separate.

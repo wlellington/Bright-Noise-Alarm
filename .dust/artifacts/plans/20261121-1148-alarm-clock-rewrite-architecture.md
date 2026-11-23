@@ -8,12 +8,13 @@ created: "2026-11-21 11:48"
 branch: dev
 inputs: [".dust/project.md", ".dust/requirements.md", ".dust/artifacts/factfinding/20261121-1108-legacy-feature-inventory-and-rewrite-decisions.md"]
 confidence: medium
-summary: "The user approved proceeding with the architecture on 2026-11-21. Host-side foundation work can be separated from hardware validation, but unresolved review findings and a clean Git baseline must be addressed before staffing implementation."
+summary: "The user approved all configuration editors with immediate field saves to SD, except the clock editor's Save/Back. The settings task now has a field matrix; undefined values need owner decisions, review and approval before implementation."
 open_questions:
   - "How are alarm occurrences consumed across restart, dismissal, one-shot disablement, and failed persistence?"
   - "What are the verified output limits, panel channel order, potentiometer wiring, and audio/storage timing bounds?"
   - "How can the target reliably detect an active serial connection at power-up, and how should existing serial requirements be reconciled with startup gating and permissible dropped messages?"
-next: "Resolve the independent review findings for the first implementation slice, establish a clean Git baseline, then prepare and staff a bounded task."
+  - "What are the owner-approved settings domains, defaults, one-shot setup and blank-store initialization policy identified in the settings task?"
+next: "Obtain owner decisions, independent review and user approval of the revised settings/storage task; preserve the current worktree and hardware safety gates."
 signature:
   agent: user
   role: user
@@ -55,7 +56,9 @@ Prefer a small set of C++ files with explicit ownership, not a generic framework
   mutation. Input events from physical and simulated encoder controls feed the
   same menu state machine; physical input events and their resulting actions
   are logged when diagnostics are enabled, subject to the unresolved
-  requirements reconciliation below. Menu edits use a draft until save or cancel.
+  requirements reconciliation below. The clock editor keeps a draft until
+  Save or Back; new configuration editors save each changed field immediately
+  as described in the bounded settings/storage scope below.
 - **Time and scheduling:** RTC provides civil time and validity; monotonic
   time drives short durations, debounce, snooze and animation between samples.
   Scheduler computes dated occurrences from enabled slots and independent
@@ -124,6 +127,77 @@ physical hardware with power-only startup, host-connected startup, late host
 connection, disconnect/reconnect, slow clients and saturated output, while
 measuring the one-second alarm timing bound and response/frame integrity.
 
+### Configuration editors and SD persistence
+
+The user approved this bounded scope on 2026-11-21: provide all configuration
+editors and SD-backed settings persistence. In the new editors, each changed
+field is saved immediately; Back navigates out and does not undo earlier
+successful field saves. The existing clock editor is the exception: keep its
+date/time draft, explicit Save and Back/cancel without changing the RTC
+(REQ-002). Immediate field saves must not be postponed until leaving an editor
+or require a separate Save action.
+
+- Cover the user-adjustable configuration required by the approved
+  requirements: at least five independent alarm slots, their schedules and
+  output selections, light presets, sleep configuration, and clock/display
+  and system settings. The clock's date/time stays in the RTC; persisted
+  settings do not include an active sleep-timer session. The
+  [settings task field matrix](../tasks/20261121-2215-configuration-editors-and-sd-settings-persistence.md#requirement-to-field-matrix)
+  enumerates objects, fields, allowed values where known, commands, saves and
+  tests. Its explicitly unresolved domains and defaults require owner decisions;
+  neither the matrix nor legacy hardware guesses authorize those values.
+- Route each field change through the application command and its validation,
+  shared with equivalent serial operations where available (REQ-025/041).
+  Attempt persistence for each accepted changed field, not just the final
+  editor value. Do not report a field saved until its write completes; on
+  invalid input or write failure restore the prior displayed and runtime value,
+  preserve the previously persisted value and unrelated fields after restart,
+  explicitly indicate the failure, and do not silently claim persistence.
+  Demonstrate this with fault injection, including failure around commit and
+  recovery; do not promise storage atomicity without evidence.
+- Use a versioned, validated SD settings representation with an integrity
+  check and recovery from an interrupted update where feasible; preserve the
+  last known good settings and unrelated SD audio. Missing, unreadable, corrupt
+  or full storage must be reported (REQ-019), without silently replacing saved
+  settings or preventing the clock UI from operating. Verify actual filesystem
+  behavior rather than assuming a rename or flush is power-loss atomic.
+  A genuinely blank store is distinct from an existing unreadable or corrupt
+  store: initial settings must come from owner-approved defaults, which are not
+  yet specified; no guessed defaults or silent write is authorized. Until
+  initialization is decided, expose an explicit uninitialized/setup-needed
+  state. For corrupt or unreadable existing data, report the fault and preserve
+  it; recover only a verified last-known-good copy, otherwise expose no saved
+  settings and do not silently reset or overwrite. Clock operation remains
+  available in both cases.
+- Restore saved alarms, presets and system settings on restart (REQ-018).
+  Whether sleep configuration persists is an owner decision; do not restore
+  active outputs or an active sleep timer (REQ-048). One-shot occurrence and snooze recovery still require their own
+  durable lifecycle design; this editor slice must not claim those behaviors
+  complete.
+- Show an editor-only candidate value before its field save attempt, without
+  driving the panel. This is not REQ-014's physical panel preview. REQ-014
+  remains not verified and not satisfied in this slice; panel preview remains
+  gated on verified safe output limits under REQ-038 and later physical testing.
+- SD access and write frequency must be bounded and measured alongside other
+  active work; do not silently defer or coalesce accepted field saves. The
+  audio/SD ownership and alarm-timing implications remain hardware gates.
+  The current clock-editor behavior and user-confirmed display must not regress.
+
+Acceptance for this scope: each configuration field can be reached and changed
+locally; each valid changed field causes an immediate save attempt, survives
+navigation and power cycle when storage succeeds, and leaves unrelated
+fields intact; failures are visible and do not masquerade as saved values;
+clock Back cancels and clock Save commits as before. Host tests exercise every
+field family, repeated changes, invalid values, missing/full/corrupt storage,
+interrupted writes, recovery, clock Save/Back, and each local editor's shared
+application-command path. Target build and an SD
+power-cycle test are required; safely gated preview and alarm/audio behavior
+need separate physical evidence. Full serial settings coverage, alarm
+scheduling and audio playback are not demonstrated merely by completing
+the editor/storage slice. One-shot configuration does not complete REQ-008's
+occurrence/disablement or recovery behavior; REQ-041 remains incomplete until
+the full serial setting read/write coverage is implemented and verified.
+
 Initialization identifies missing RTC, storage and audio without blocking the
 remaining controls. Invalid RTC is never silently replaced by build time;
 indicate that it must be set, and do not schedule against invalid time.
@@ -189,7 +263,7 @@ proposals, not existing branches. Staffing and implementation require approval.
 | # | Step | Branch | Acceptance criteria | Verification |
 |---|---|---|---|---|
 | 0 | Resolve slice-specific semantics and hardware feasibility | none | Resolve relevant review findings before each slice; verify target wiring, safe output limits, audio/SD timing and supported WAV format before affected hardware operation or claims. | On-device channel, level, audio and load measurements with recorded setup; no unverified maximum treated as safe. Host-only work does not require these measurements. |
-| 1 | Application and storage foundation | feature/app-foundation | Validated shared commands, settings persistence, resource faults and RTC validity; no save success on failed writes. | Host tests for validation, cancel, storage failure/restart; target build. |
+| 1 | Configuration editors and storage | assigned in approved task | All configuration editors and SD persistence; each new-editor field change saves immediately, while clock Save/Back is unchanged; explicit storage faults. | Host tests for field saves, clock cancel, storage failure/restart; target build and SD power-cycle test. Preview and output hardware remain gated. |
 | 2 | Clock, inputs and serial | feature/clock-controls | Time and menu actions, physical controls, serial queries/results, simulated encoder and display read share application state. | Host command/menu parity and malformed-input tests; target serial/input/display checks. |
 | 3 | Lighting and audio | feature/output-drivers | RGBW frames, effects, previews, WAV playback and final output caps work through bounded adapters. | Host effect/frame/cap tests; target RGBW and audio checks, including missing files. |
 | 4 | Alarms and sleep | feature/scheduling | All alarm, ramp, snooze, dismissal, priority, sleep and restart requirements operate using dated occurrence state. | Fake RTC/monotonic tests for boundaries, conflict, reboot and invalid RTC; target timing under concurrent load. |
